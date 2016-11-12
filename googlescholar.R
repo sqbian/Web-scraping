@@ -1,5 +1,5 @@
 library(XML)
-setwd("C:/Users/bian0553/Desktop/newspaper/googlescholar")
+
 
 #read lines error preventing
 catch_txt = function(URL) {
@@ -56,16 +56,11 @@ getinfo = function(getdoc){
   df
 }
 
-#print("Start to sleep")
-#Sys.sleep(36000)
 
-#var_searchURL_character = 'http://scholar.google.com/scholar?cites=15888883762379490553&as_sdt=2005&sciodt=0,5&hl=en'
-var_searchURL_character = 'http://scholar.google.com/scholar?start=460&hl=en&as_sdt=2005&sciodt=0,5&cites=15888883762379490553&scipsc='
+var_searchURL_character = 'http://scholar.google.com/scholar?cites=15888883762379490553&as_sdt=2005&sciodt=0,5&hl=en'
 
-
-page = 47
+page = 1
 getdoc <- getParse(var_searchURL_character)
-print(length(getdoc['//td[@align ="left" ]/a[@href]']))
 
 while(length(getdoc['//td[@align ="left" ]/a[@href]']) != 0){
   grab = floor(runif(1,min = 4,max = 6))
@@ -94,8 +89,4 @@ while(length(getdoc['//td[@align ="left" ]/a[@href]']) != 0){
 
 
 
-
-googlescholar = read.table("googlescholar")
-names(googlescholar)= c('Title','Author','locORyear','Notes')
-write.csv(googlescholar,'googlescholar.csv')
 
