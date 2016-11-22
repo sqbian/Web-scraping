@@ -87,6 +87,68 @@ while(length(getdoc['//td[@align ="left" ]/a[@href]']) != 0){
   
 }
 
+                 
+ #=================================Another way to scrape more efficiently ======Use Relenium=================================================
+library('RSelenium')
+
+
+var_searchURL_character ="https://scholar.google.com/scholar?start=0&hl=en&as_sdt=2005&sciodt=0,5&cites=26185891145257329&scipsc="
+
+checkForServer()
+startServer()
+mybrowser = remoteDriver(remoteServerAddr = "localhost" 
+                         , port = 4444
+                         , browserName = "firefox"
+)
+mybrowser$open()
+mybrowser$navigate(var_searchURL_character)
+
+
+
+for (var_page_int in 1:100) {
+  
+  
+  titlet = character(0)
+  authort = character(0)
+  notet = character(0)
+  locORyeart= character(0)
+  
+  gettitle = mybrowser$findElements(using = 'xpath','//h3[@class ="gs_rt" ]')
+  getarticle = mybrowser$findElements(using = 'xpath', '//div[@class ="gs_a" ]')
+  for(i in 1:length(gettitle)){
+    print(i)
+    title = unlist(gettitle[[i]]$getElementText())
+    article = unlist(getarticle[[i]]$getElementText())
+    article = unlist(strsplit(article,'-'))
+    
+    author = article[1]
+    locORyear = article[2]
+    note = article[3]
+    
+    ####save the text
+
+    titlet = c(titlet, title)
+    authort = c(authort,author)
+    locORyeart = c(locORyeart, locORyear)
+    notet = c(notet,note)
+  }
+  
+  gs = data.frame(titlet, authort, locORyeart,notet)
+  write.table(gs,'gstest',row.names = FALSE,append = TRUE,col.names = FALSE)
+  
+    Sys.sleep(2)
+    pagebox <- mybrowser$findElement(using = 'xpath', '//td[@align ="left" ]/a[@href]')
+    pagebox$clickElement()
+  
+    Sys.sleep(floor(runif(1,min = 30,max = 40 )))
+  
+  
+  print(var_page_int)
+  
+}
+
+
+
 
 
 
