@@ -149,6 +149,94 @@ for (var_page_int in 1:100) {
 
 
 
+#===================================Use Relenium to query publician year(1970-2016)=================================================
+library('RSelenium')
+
+var_searchURL_character ="https://scholar.google.com/scholar?as_q=&as_epq=silent+spring&as_oq=&as_eq=&as_occt=any&as_sauthors=&as_publication=&as_ylo=1970&as_yhi=1970&btnG=&hl=en&as_sdt=0%2C5"
+
+
+checkForServer()
+startServer()
+mybrowser = remoteDriver(remoteServerAddr = "localhost" 
+                         , port = 4444
+                         , browserName = "firefox"
+)
+mybrowser$open()
+
+for (yr in 1970:2016){
+  var_searchURL_character = paste0("https://scholar.google.com/scholar?as_q=&as_epq=silent+spring&as_oq=&as_eq=&as_occt=any&as_sauthors=&as_publication=&as_ylo=",yr,"&as_yhi=",yr,"&btnG=&hl=en&as_sdt=0%2C5")
+  
+  mybrowser$navigate(var_searchURL_character)
+  Sys.sleep(8)
+  
+  #get page
+  ifnext = mybrowser$findElements(using = 'xpath','//td[@align ="left" ]/a[@href]')
+  
+  var_page_int = 1
+  while(length(ifnext) != 0) {
+    
+    
+    titlet = character(0)
+    authort = character(0)
+    notet = character(0)
+    locORyeart= character(0)
+    
+    gettitle = mybrowser$findElements(using = 'xpath','//h3[@class ="gs_rt" ]')
+    getarticle = mybrowser$findElements(using = 'xpath', '//div[@class ="gs_a" ]')
+    for(i in 1:length(gettitle)){
+      print(i)
+      title = unlist(gettitle[[i]]$getElementText())
+      article = unlist(getarticle[[i]]$getElementText())
+      article = unlist(strsplit(article,'-'))
+      
+      author = article[1]
+      locORyear = article[2]
+      note = article[3]
+      
+      ####save the text
+      
+      titlet = c(titlet, title)
+      authort = c(authort,author)
+      locORyeart = c(locORyeart, locORyear)
+      notet = c(notet,note)
+    }
+    
+    gs = data.frame(titlet, authort, locORyeart,notet,rep(yr,length(titlet)))
+    write.table(gs,'queryyear',row.names = FALSE,append = TRUE,col.names = FALSE)
+    
+    Sys.sleep(2)
+    ifnext = mybrowser$findElements(using = 'xpath','//td[@align ="left" ]/a[@href]')
+    if(length(ifnext) == 0){
+      break
+    }
+    
+    
+    pagebox <- mybrowser$findElement(using = 'xpath', '//td[@align ="left" ]/a[@href]')
+    pagebox$clickElement()
+    
+    Sys.sleep(floor(runif(1,min = 15,max = 30 )))
+    
+    
+    print(var_page_int)
+    var_page_int = var_page_int + 1
+    
+    
+  }
+  
+  print(yr)
+}
+
+
+
+
+
+queryyear <- read.csv2("C:/Users/bian0553/Desktop/newspaper/googlescholar/queryyear", header=FALSE, sep="")
+
+dim(queryyear)
+
+names(queryyear) = c("Title","Author","Locoryear","Note","QueryYear")
+
+write.csv(queryyear,"googlescholar1970-2016.csv",row.names = FALSE)
 
 
 
