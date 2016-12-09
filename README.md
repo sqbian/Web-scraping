@@ -11,3 +11,4 @@ It also contained another way to web-scrape which turned out to be more efficien
 
 ###regulation.R
 This is the program for web-scraping the search query item results from www.regulations.gov. The program will go to each result, save the comment text and click the attachment to download if there is any. Save each result's url, comment, the name of the attachment into a csv form. 
+Then use the extity extraction procedure from openNLP to extract the location, person name and organization name from all of the scraped comment texts. Then save them to the csv form. 
