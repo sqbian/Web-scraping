@@ -87,6 +87,54 @@ while(length(getdoc['//td[@align ="left" ]/a[@href]']) != 0){
   
 }
 
+#==============================================download the source code for each page and then scrape those downloaded html files. This is to avoid IP address being blocked================================================
+                 
+library(RCurl)
+
+getinfo = function(getdoc){
+  # define an end to the page range for the search
+  getitle <- unlist(lapply(getdoc['//h3[@class ="gs_rt" ]'],xmlValue))
+  getnote <- unlist(lapply(getdoc['//div[@class ="gs_a" ]'],xmlValue))
+  notes = sapply(getnote,function(x) strsplit(x,'-'))
+  n = length(getitle)
+  df <- data.frame(Title = character(n), Author = character(n),locORyear =character(n), Notes = character(n),stringsAsFactors = FALSE)
+  for (j in 1:n){
+    df$Title[j] =getitle[j]
+    df$Author[j] = notes[[j]][1]
+    df$locORyear[j] = notes[[j]][2]
+    df$Notes[j] = notes[[j]][3]
+  }
+  df
+}
+
+
+
+for(k in 1:length(list.files())){
+  getdoc = readHTMLTable(list.files()[k],stringsAsFactors = FALSE)
+  getdf = getdoc[[1]]
+  
+  v = c("")
+  
+  for(i in 1:nrow(getdf)){
+    for(j in 1:ncol(getdf)){
+      v = c(v,getdf[i,j])
+    }
+  }
+  
+  html_doc = paste(v, collapse = "")
+  newdoc = htmlParse(html_doc)
+  write.table(getinfo(newdoc),file = "googlescholar.txt",append = TRUE,row.names = FALSE, col.names = FALSE)
+  print(k)
+}
+
+
+
+googlescholar = read.table("googlescholar.txt")
+names(googlescholar)= c('Title','Author','locORyear','Notes')
+write.csv(googlescholar,'googlescholar.csv',row.names = FALSE)
+
+                 
+                 
                  
  #=================================Another way to scrape more efficiently ======Use Relenium=================================================
 library('RSelenium')
