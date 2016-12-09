@@ -65,7 +65,7 @@ pubmedscrape = function(object){
 
 
 
-  for (var_page_int in 26:var_searchEndRange_int) {
+  for (var_page_int in 1:var_searchEndRange_int) {
 
     linkt = character(0)
     titlet = character(0)
